@@ -4,6 +4,7 @@ from argparse import ArgumentParser, Namespace
 import json
 from typing import Any, Dict, List, Mapping, Tuple
 from easydict import EasyDict
+from einops import rearrange, repeat, reduce
 
 import sys
 base_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../'))
@@ -17,9 +18,8 @@ from inference_utils import *
 
 logger = get_logger()
 
-
 class STAR():
-    def __init__(self, 
+    def __init__(self,
                  result_dir='./results/',
                  file_name='000_video.mp4',
                  model_path='',
@@ -82,11 +82,10 @@ class STAR():
 
         save_video(output, self.result_dir, self.file_name, fps=input_fps)
         return os.path.join(self.result_dir, self.file_name)
-    
 
 def parse_args():
     parser = ArgumentParser()
-    
+
     parser.add_argument("--input_path", required=True, type=str, help="input video path")
     parser.add_argument("--save_dir", type=str, default='results', help="save directory")
     parser.add_argument("--file_name", type=str, help="file name")
@@ -98,11 +97,12 @@ def parse_args():
     parser.add_argument("--cfg", type=float, default=7.5)
     parser.add_argument("--solver_mode", type=str, default='fast', help='fast | normal')
     parser.add_argument("--steps", type=int, default=15)
+    # parser.add_argument("--patch_size", type=int, default=256)
 
     return parser.parse_args()
 
 def main():
-    
+
     args = parse_args()
 
     input_path = args.input_path
@@ -120,15 +120,15 @@ def main():
     assert solver_mode in ('fast', 'normal')
 
     star = STAR(
-                result_dir=save_dir,
-                file_name=file_name,
-                model_path=model_path,
-                solver_mode=solver_mode,
-                steps=steps,
-                guide_scale=guide_scale,
-                upscale=upscale,
-                max_chunk_len=max_chunk_len,
-                )
+        result_dir=save_dir,
+        file_name=file_name,
+        model_path=model_path,
+        solver_mode=solver_mode,
+        steps=steps,
+        guide_scale=guide_scale,
+        upscale=upscale,
+        max_chunk_len=max_chunk_len,
+    )
 
     star.enhance_a_video(input_path, prompt)
 

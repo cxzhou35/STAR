@@ -2,3 +2,8 @@ __main__
 __pycache__
 test*
 Open-Sora
+
+*.pyc
+
+results
+pretrained_weight
