@@ -4,6 +4,7 @@ import colossalai
 import torch
 import torch.distributed as dist
 from colossalai.cluster import DistCoordinator
+from colossalai.context import Config
 from mmengine.runner import set_random_seed
 
 from opensora.acceleration.parallel_states import set_sequence_parallel_group

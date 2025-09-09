@@ -2,11 +2,13 @@ pip3 install --upgrade pip
 
 pip3 install greenlet==1.1.3
 pip3 install gevent==22.8.0
-pip3 install torch 
-pip3 install torchvision
+
+# TODO: install torch and torchvision manually for specific nvcc version
+# pip3 install torch
+# pip3 install torchvision
 
 pip3 install ftfy
-pip3 install numpy
+pip3 install numpy==1.26.4
 pip3 install tqdm
 pip3 install psutil
 pip3 install pre-commit
@@ -35,6 +37,11 @@ pip3 install kornia
 pip3 install scipy
 sudo apt-get install -y libgl1-mesa-dev
 
+# TODO: add missing packages
+pip3 install mmengine
+pip3 install pandas
+pip3 install av
+
 # install flash attention (optional)
 # set enable_flashattn=False in config to avoid using flash attention
 pip3 install packaging
@@ -51,9 +58,9 @@ pip install -v --disable-pip-version-check --no-cache-dir --no-build-isolation -
 # pip install xformers-0.0.25.post1-cp39-cp39-manylinux2014_x86_64.whl
 
 # install this project
-git clone https://github.com/hpcaitech/Open-Sora
+# git clone https://github.com/hpcaitech/Open-Sora
 cd Open-Sora
 pip install -v .
-pip uninstall colossalai -y
-pip install colossalai==0.3.7
+# pip uninstall colossalai -y
+# pip install colossalai==0.3.7
 cd ..

@@ -54,6 +54,7 @@ class VideoTextDataset(torch.utils.data.Dataset):
         print(f"Dataset contains {num_videos} videos and {num_images} images.")
 
     def get_type(self, path):
+        print(f"path: {path}")
         ext = os.path.splitext(path)[-1].lower()
         if ext.lower() in VID_EXTENSIONS:
             return "video"
@@ -94,14 +95,15 @@ class VideoTextDataset(torch.utils.data.Dataset):
         return {"video": video, "text": text, 'fps': fps}
 
     def __getitem__(self, index):
-        for _ in range(10):
-            try:
-                return self.getitem(index)
-            except Exception as e:
-                path = self.data.iloc[index]["path"]
-                print(f"data {path}: {e}")
-                index = np.random.randint(len(self))
-        raise RuntimeError("Too many bad data.")
+        return self.getitem(index)
+        # for _ in range(10):
+        #     try:
+        #         return self.getitem(index)
+        #     except Exception as e:
+        #         path = self.data.iloc[index]["path"]
+        #         print(f"data {path}: {e}")
+        #         index = np.random.randint(len(self))
+        # raise RuntimeError("Too many bad data.")
 
     def __len__(self):
         return len(self.data)
