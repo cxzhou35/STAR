@@ -6,7 +6,7 @@ export TOKENIZERS_PARALLELISM=false
 
 # Define paths
 INPUT_CSV="/workspace/codes/STAR/datasets/neemo_mini/neemo_mini_short.csv"
-SAVE_PATH="/workspace/codes/STAR/datasets/neemo_mini"
+SAVE_PATH="/workspace/codes/STAR/datasets/neemo_mini_720p_res"
 
 # Run script on the full CSV file
 torchrun --nproc_per_node=1 --master_port "29501" \

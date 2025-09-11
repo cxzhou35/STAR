@@ -339,7 +339,7 @@ def parse_args(input_args=None):
             " more information see https://huggingface.co/docs/accelerate/v0.17.0/en/package_reference/accelerator#accelerate.Accelerator"
         ),
     )
-    
+
     if input_args is not None:
         args = parser.parse_args(input_args)
     else:
@@ -438,7 +438,7 @@ logger.info('Build Temporal VAE')
 train_dataset = PairedCaptionVideoDataset(
     root_folders=[
         args.train_data_dir
-    ], 
+    ],
     num_frames=args.num_frames,
 )
 
@@ -578,7 +578,7 @@ def fourier_transform(x, balance=None):
     # Perform 2D Real Fourier transform (rfft2 only computes positive frequencies)
     x = x.to(torch.float32)
     fft_x = torch.fft.rfft2(x, dim=(-2, -1))
-    
+
     # Calculate magnitude of frequency components
     magnitude = torch.abs(fft_x)
 
@@ -599,10 +599,10 @@ def fourier_transform(x, balance=None):
     # Smooth mask using sigmoid to ensure gradients can pass through
     sharpness = 10  # A parameter to control the sharpness of the transition
     low_freq_mask = torch.sigmoid(sharpness * (cutoff - magnitude))
-    
+
     # High-frequency mask can be derived from low-frequency mask (1 - low_freq_mask)
     high_freq_mask = 1 - low_freq_mask
-    
+
     # Separate low and high frequencies using smooth masks
     low_freq = fft_x * low_freq_mask
     high_freq = fft_x * high_freq_mask
@@ -610,7 +610,7 @@ def fourier_transform(x, balance=None):
     # Return real and imaginary parts separately
     low_freq = torch.stack([low_freq.real, low_freq.imag], dim=-1)
     high_freq = torch.stack([high_freq.real, high_freq.imag], dim=-1)
-    
+
     return low_freq, high_freq
 
 
@@ -668,18 +668,18 @@ for epoch in range(0, args.num_train_epochs):
             timesteps = timesteps.long()
             noise = torch.randn_like(video_data_feature)
             noised_video = noise_scheduler.diffuse(video_data_feature, timesteps, noise=noise)
-            
+
             # == video meta info ==
             for k, v in batch.items():
                 if isinstance(v, torch.Tensor):
                     model_kwargs[k] = v.to(accelerator.device, weight_dtype)
-            
+
             model_kwargs['hint'] = lq_feature
 
             # Predict the velocity
             out = model(noised_video, timesteps, **model_kwargs)
             target = noise_scheduler.get_velocity(x0=video_data_feature, xt=noised_video, t=timesteps)
-            
+
             # get the low-freq & high-freq from x0
             pred_x0 = noise_scheduler.get_x0(v=out, xt=noised_video, t=timesteps).to(accelerator.device, weight_dtype)
             # Learning the cutoff frequency
@@ -720,7 +720,7 @@ for epoch in range(0, args.num_train_epochs):
                         save_path = os.path.join(args.output_dir, f"checkpoint-{global_step}")
                         accelerator.save_state(save_path)
                         logger.info(f"Saved state to {save_path}")
-            
+
 
             logs = {"loss_high": loss_high.detach().item(), "loss_low": loss_low.detach().item(), "loss_v": loss_v.detach().item(), "total_loss": loss.detach().item(), "lr": lr_scheduler.get_last_lr()[0]}
             progress_bar.set_postfix(**logs)

@@ -38,7 +38,7 @@ class VideoToVideo_sr():
         if 'state_dict' in load_dict:
             load_dict = load_dict['state_dict']
         ret = generator.load_state_dict(load_dict, strict=False)
-        
+
         self.generator = generator.half()
         logger.info('Load model path {}, with local status {}'.format(cfg.model_path, ret))
 
@@ -106,7 +106,7 @@ class VideoToVideo_sr():
             torch.cuda.empty_cache()
             chunk_inds = make_chunks(frames_num, interp_f_num=0, max_chunk_len=max_chunk_len) if frames_num > max_chunk_len else None
 
-            solver = 'dpmpp_2m_sde' # 'heun' | 'dpmpp_2m_sde' 
+            solver = 'dpmpp_2m_sde' # 'heun' | 'dpmpp_2m_sde'
             gen_vid = self.diffusion.sample_sr(
                 noise=noised_lr,
                 model=self.generator,
@@ -124,7 +124,8 @@ class VideoToVideo_sr():
             torch.cuda.empty_cache()
 
             logger.info(f'sampling, finished.')
-            vid_tensor_gen = self.vae_decode_chunk(gen_vid, chunk_size=3)
+            # TODO: adjust the chunk size to avoid out of memory
+            vid_tensor_gen = self.vae_decode_chunk(gen_vid, chunk_size=1)
 
             logger.info(f'temporal vae decoding, finished.')
 
@@ -135,7 +136,7 @@ class VideoToVideo_sr():
             vid_tensor_gen, '(b f) c h w -> b c f h w', b=bs)
 
         torch.cuda.empty_cache()
-        
+
         return gen_video.type(torch.float32).cpu()
 
     def temporal_vae_decode(self, z, num_f):
@@ -159,7 +160,7 @@ class VideoToVideo_sr():
         z = torch.cat(z_list, dim=0)
         z = rearrange(z, "(b f) c h w -> b c f h w", f=num_f)
         return z * self.vae.config.scaling_factor
-    
+
 
 def pad_to_fit(h, w):
     BEST_H, BEST_W = 720, 1280
@@ -168,7 +169,7 @@ def pad_to_fit(h, w):
         h1, h2 = _create_pad(h, BEST_H)
     elif h == BEST_H:
         h1 = h2 = 0
-    else: 
+    else:
         h1 = 0
         h2 = int((h + 48) // 64 * 64) + 64 - 48 - h
 
@@ -206,5 +207,5 @@ def sliding_windows_1d(length, window_size, overlap_size):
             break
         else:
             coords.append((ind,ind+window_size))
-            ind += stride  
+            ind += stride
     return coords

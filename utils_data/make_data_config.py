@@ -4,7 +4,7 @@ dataset = dict(
     data_path=None,
     num_frames=32,
     frame_interval=2,
-    image_size=(896, 1600),
+    image_size=(720, 1280),
 )
 
 data_path = ''

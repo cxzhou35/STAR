@@ -2,21 +2,21 @@
 
 # Folder paths
 # video_folder_path='./input/video'
-video_folder_path='/data/chenxu/codes/star/input/video/dance'
+video_folder_path="./datasets/test/videos"
 
 # txt_file_path='./input/text/prompt.txt'
-txt_file_path='/data/chenxu/codes/star/input/text/dance/view_05_seq00_crop.txt'
+txt_file_path="./datasets/test/captions/neemo_mini_lf.txt"
 
-model_path='/data/chenxu/codes/star/pretrained_weight/I2VGen-XL-based/heavy_deg.pt'
+model_path="./pretrained_weight/I2VGen-XL-based/heavy_deg.pt"
 model_type='I2VGen-XL-heavy'
-# model_path='/data/chenxu/codes/star/pretrained_weight/I2VGen-XL-based/light_deg.pt'
+# model_path='./pretrained_weight/I2VGen-XL-based/light_deg.pt'
 # model_type='I2VGen-XL-light'
-# model_path='/data/chenxu/codes/star/pretrained_weight/CogVideoX-5B-based/1/mp_rank_00_model_states.pt'
+# model_path='./pretrained_weight/CogVideoX-5B-based/1/mp_rank_00_model_states.pt'
 # model_type='CogVideoX-5B'
 echo "Model type: $model_type"
 
 # use model type as the postfix
-save_dir="/data/chenxu/codes/star/results/${model_type}"
+save_dir="./results/${model_type}"
 echo "Save directory: $save_dir"
 
 # Get all .mp4 files in the folder using find to handle special characters
@@ -32,8 +32,8 @@ done
 mapfile -t lines < <(grep -v '^\s*$' "$txt_file_path")
 
 steps=15 # The number of steps for the optimization process. default: 15
-upscale=4 # The upscale factor for the super-resolution model. default: 4
-frame_length=12 # The number of video frames processed simultaneously during each denoising process. default: 32
+upscale=2 # The upscale factor for the super-resolution model. default: 4
+frame_length=8 # The number of video frames processed simultaneously during each denoising process. default: 32
 
 # Debugging output
 echo "Number of MP4 files: ${#mp4_files[@]}"

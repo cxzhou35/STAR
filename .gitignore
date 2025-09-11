@@ -6,4 +6,5 @@ Open-Sora
 *.pyc
 
 results
+outputs
 pretrained_weight
