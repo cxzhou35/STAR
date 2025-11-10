@@ -7,12 +7,14 @@ video_folder_path="./datasets/test/videos"
 # txt_file_path='./input/text/prompt.txt'
 txt_file_path="./datasets/test/captions/neemo_mini_lf.txt"
 
-model_path="./pretrained_weight/I2VGen-XL-based/heavy_deg.pt"
-model_type='I2VGen-XL-heavy'
+# model_path="./pretrained_weight/I2VGen-XL-based/heavy_deg.pt"
+# model_type='I2VGen-XL-heavy'
 # model_path='./pretrained_weight/I2VGen-XL-based/light_deg.pt'
 # model_type='I2VGen-XL-light'
 # model_path='./pretrained_weight/CogVideoX-5B-based/1/mp_rank_00_model_states.pt'
 # model_type='CogVideoX-5B'
+model_path="./outputs/neemo_mini_720p_res/checkpoint-6000/model.safetensors"
+model_type='I2VGen-XL-finetune-6000'
 echo "Model type: $model_type"
 
 # use model type as the postfix

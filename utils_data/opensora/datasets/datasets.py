@@ -31,7 +31,7 @@ class VideoTextDataset(torch.utils.data.Dataset):
         num_frames=16,
         frame_interval=1,
         image_size=(256, 256),
-        transform_name="direct_crop",
+        transform_name="resize_crop", # default: direct_crop
     ):
         self.data_path = data_path
         self.data = read_file(data_path)
@@ -54,7 +54,6 @@ class VideoTextDataset(torch.utils.data.Dataset):
         print(f"Dataset contains {num_videos} videos and {num_images} images.")
 
     def get_type(self, path):
-        print(f"path: {path}")
         ext = os.path.splitext(path)[-1].lower()
         if ext.lower() in VID_EXTENSIONS:
             return "video"
@@ -66,6 +65,10 @@ class VideoTextDataset(torch.utils.data.Dataset):
         sample = self.data.iloc[index]
         path = sample["path"]
         text = sample["text"]
+
+        # HACK: get the video id from the path
+        vid = path.split('/')[-1].split('.')[0].split('_')[0]
+
         file_type = self.get_type(path)
 
         if file_type == "video":
@@ -92,18 +95,18 @@ class VideoTextDataset(torch.utils.data.Dataset):
 
         # TCHW -> CTHW
         video = video.permute(1, 0, 2, 3)
-        return {"video": video, "text": text, 'fps': fps}
+        return {"video": video, "text": text, 'fps': fps, 'vid': vid}
 
     def __getitem__(self, index):
-        return self.getitem(index)
-        # for _ in range(10):
-        #     try:
-        #         return self.getitem(index)
-        #     except Exception as e:
-        #         path = self.data.iloc[index]["path"]
-        #         print(f"data {path}: {e}")
-        #         index = np.random.randint(len(self))
-        # raise RuntimeError("Too many bad data.")
+        for _ in range(10):
+            try:
+                return self.getitem(index)
+            except Exception as e:
+                path = self.data.iloc[index]["path"]
+                print(f"data {path}: {e}")
+                index = np.random.randint(len(self))
+        raise RuntimeError("Too many bad data.")
+        # return self.getitem(index)
 
     def __len__(self):
         return len(self.data)

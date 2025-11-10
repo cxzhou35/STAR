@@ -6,6 +6,7 @@ from typing import Any, Dict
 import torch
 import torch.cuda.amp as amp
 import torch.nn.functional as F
+from safetensors.torch import load_file as load_safetensors
 
 from video_to_video.modules import *
 from video_to_video.utils.config import cfg
@@ -34,9 +35,12 @@ class VideoToVideo_sr():
         generator.eval()
 
         cfg.model_path = opt.model_path
-        load_dict = torch.load(cfg.model_path, map_location='cpu')
-        if 'state_dict' in load_dict:
-            load_dict = load_dict['state_dict']
+        if cfg.model_path.endswith('.pt'):
+            load_dict = torch.load(cfg.model_path, map_location='cpu')
+        else:
+            load_dict = load_safetensors(cfg.model_path, device='cpu')
+            if 'state_dict' in load_dict:
+                load_dict = load_dict['state_dict']
         ret = generator.load_state_dict(load_dict, strict=False)
 
         self.generator = generator.half()

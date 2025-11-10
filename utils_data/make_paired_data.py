@@ -54,6 +54,7 @@ def main():
     # 3. build model & load weights
     # ======================================================
     cfg.dataset['data_path'] = cfg.data_path
+    print(f"Read data path: {cfg.data_path}")
     dataset = build_module(cfg.dataset, DATASETS)
     dataloader_args = dict(
         dataset=dataset,
@@ -78,10 +79,13 @@ def main():
     os.makedirs(save_dir_lq, exist_ok=True)
     os.makedirs(save_dir_txt, exist_ok=True)
 
+    print(f"Save results to {cfg.save_path}")
+
     # 4.1. batch generation with progress bar
     for _, batch in tqdm(enumerate(dataloader_iter), total=len(dataloader), desc="Processing 10K Batches"):
         x = batch.pop("video").to(device, dtype)  # [B, C, T, H, W], HR-video
         fps = batch.pop('fps')
+        vid = batch.pop('vid')[0]
 
         # generate LR-video
         lr, x = degradation_process(x)
@@ -92,15 +96,16 @@ def main():
         # 4.4. save samples
         if not use_dist or coordinator.is_master():
             for i in range(0, lr.shape[0]):
-                save_dir_gt_ = os.path.join(save_dir_gt, f"{sample_idx}")
-                save_dir_lq_ = os.path.join(save_dir_lq, f"{sample_idx}")
-                save_dir_txt_ = os.path.join(save_dir_txt, f"{sample_idx}.txt")
+                save_dir_gt_ = os.path.join(save_dir_gt, f"{vid}")
+                save_dir_lq_ = os.path.join(save_dir_lq, f"{vid}")
+                save_dir_txt_ = os.path.join(save_dir_txt, f"{vid}.txt")
 
                 save_sample(x[i], fps=fps / cfg.dataset['frame_interval'], save_path=save_dir_gt_)
                 save_sample(lr[i], fps=fps / cfg.dataset['frame_interval'], save_path=save_dir_lq_)
                 with open(save_dir_txt_, 'w', encoding='utf-8') as file:
                     file.write(y[i])
 
+                print(f"Save results of sample {vid}.")
                 sample_idx += 1
 
 if __name__ == "__main__":
